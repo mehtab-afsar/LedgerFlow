@@ -315,11 +315,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "expenses_party_id_fkey"
-            columns: ["party_id"]
+            foreignKeyName: "expenses_party_org_fk"
+            columns: ["party_id", "org_id"]
             isOneToOne: false
             referencedRelation: "parties"
-            referencedColumns: ["id"]
+            referencedColumns: ["id", "org_id"]
           },
         ]
       }

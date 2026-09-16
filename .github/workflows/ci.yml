@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  # ── No Docker, no database, no network. ──────────────────────────────────
+  # The guards read supabase/migrations/*.sql and run regex, so they answer in
+  # seconds: is a policy missing its WITH CHECK, is a migration non-idempotent,
+  # does an embed cross an ambiguous pair without naming its key. That last one
+  # and the first are both mistakes this repo has actually shipped.
+  checks:
+    name: types, lint and guards
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Guards
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  # ── A real database. ─────────────────────────────────────────────────────
+  # The two verification scripts attempt the things that must not work — an
+  # expense moved into another organisation, an allocation larger than the
+  # invoice owes, cancelling an invoice that has taken money — and assert the
+  # database refuses. They talk to Supabase directly, so no web server is
+  # needed for them.
+  database:
+    name: migrations and ledger rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Supabase
+        run: supabase start
+
+      - name: Write .env.local from the running stack
+        run: |
+          set -euo pipefail
+          eval "$(supabase status -o env)"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=${API_URL}"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${ANON_KEY}"
+            echo "SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}"
+            echo "SUPABASE_DB_URL=${DB_URL}"
+            echo "NEXT_PUBLIC_APP_URL=http://localhost:3000"
+          } > .env.local
+
+      # Applies all fifteen from nothing, which is also what proves they are
+      # idempotent in practice rather than only by regex.
+      - name: Apply migrations
+        run: npm run db:reset
+
+      - name: Check generated types are current
+        run: |
+          set -euo pipefail
+          npm run db:types
+          if ! git diff --quiet -- types/supabase.ts; then
+            echo "::error file=types/supabase.ts::types/supabase.ts is stale — run 'npm run db:types' and commit the result"
+            git --no-pager diff --stat -- types/supabase.ts
+            exit 1
+          fi
+
+      - name: Expenses cannot cross an organisation
+        run: npm run verify:expenses
+
+      - name: Money cannot go missing
+        run: npm run verify:ledger
