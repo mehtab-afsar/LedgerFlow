@@ -71,11 +71,32 @@ function sourceFiles(): string[] {
   return out;
 }
 
-/** Every `.from("x") … .select("…")` pair in a file, with its select string. */
+/**
+ * Every `.from("x") … .select("…")` pair in a file, with its select string.
+ *
+ * Each `.select(` is matched to the NEAREST PRECEDING `.from(`, rather than
+ * requiring the two to be adjacent. An earlier version allowed a fixed 120
+ * characters between them and silently skipped every query with a comment in
+ * the gap — including the one on the documents page, which is exactly the
+ * query this guard was written for. It passed by finding nothing, which is the
+ * failure mode the anti-vacuous assertions below now cover directly.
+ */
 function queries(src: string): { source: string; select: string }[] {
+  const froms: { index: number; table: string }[] = [];
+  for (const m of src.matchAll(/\.from\(\s*["'`]([a-z_]+)["'`]\s*\)/g)) {
+    froms.push({ index: m.index!, table: m[1] });
+  }
+
   const out: { source: string; select: string }[] = [];
-  const re = /\.from\(\s*["'`]([a-z_]+)["'`]\s*\)[\s\S]{0,120}?\.select\(\s*(["'`])([\s\S]*?)\2/g;
-  for (const m of src.matchAll(re)) out.push({ source: m[1], select: m[3] });
+  for (const m of src.matchAll(/\.select\(\s*(["'`])([\s\S]*?)\1/g)) {
+    // The last `.from(` before this `.select(` is the table it reads.
+    let source: string | null = null;
+    for (const f of froms) {
+      if (f.index < m.index!) source = f.table;
+      else break;
+    }
+    if (source) out.push({ source, select: m[2] });
+  }
   return out;
 }
 
@@ -95,6 +116,19 @@ describe("PostgREST embeds", () => {
   it("found queries to check", () => {
     const total = sourceFiles().reduce((n, f) => n + queries(readFileSync(f, "utf8")).length, 0);
     expect(total).toBeGreaterThan(0);
+  });
+
+  it("actually finds queries on the tables it is meant to police", () => {
+    // The assertion that matters. A parsing bug that skips exactly the
+    // queries worth checking leaves the rule below passing on an empty set —
+    // which is how the previous version of queries() went unnoticed. Every
+    // table with an ambiguous pair must be seen to be read somewhere.
+    const seen = new Set<string>();
+    for (const file of sourceFiles()) {
+      for (const q of queries(readFileSync(file, "utf8"))) seen.add(q.source);
+    }
+    const unseen = [...ambiguous.keys()].filter((t) => !seen.has(t));
+    expect(unseen).toEqual([]);
   });
 
   it("every embed of a pair reachable by two keys names the key", () => {
