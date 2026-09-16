@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>LedgerFlow — pitch deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --paper: #f6f8f7;
+    --ink: #16211f;
+    --ink-2: #3d4844;
+    --ink-3: #67746f;
+    --line: #dfe6e3;
+    --line-soft: #edf1ef;
+
+    --brand: #0f6a5c;
+    --brand-hover: #0b5044;
+    --brand-tint: #e4f3ef;
+
+    --forest: #1f7a4d;
+    --forest-tint: #e3f3ea;
+    --forest-ink: #17603c;
+
+    --marigold: #e5a500;
+    --marigold-tint: #fff5d6;
+    --marigold-ink: #7a5900;
+
+    --alert: #b42318;
+    --alert-tint: #fdecea;
+
+    --violet: #6d28d9;
+    --violet-tint: #f1ebfd;
+    --violet-ink: #5b21b6;
+  }
+
+  @page { size: 13.333in 7.5in; margin: 0; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); }
+  body { font-family: "IBM Plex Sans", -apple-system, sans-serif; color: var(--ink); }
+  .mono { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+
+  .slide {
+    width: 1280px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    padding: 64px 72px;
+    page-break-after: always;
+    background: var(--paper);
+  }
+  .slide:last-child { page-break-after: auto; }
+
+  .slide.dark {
+    background: var(--ink);
+    color: #fff;
+  }
+  .slide.dark .ink3 { color: #9aa8a3; }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 14px;
+  }
+  .slide.dark .eyebrow { color: #9aa8a3; }
+
+  h1 {
+    font-size: 46px;
+    line-height: 1.12;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    max-width: 20ch;
+  }
+  h2 {
+    font-size: 34px;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 14px;
+    max-width: 22ch;
+  }
+  .lede {
+    font-size: 16.5px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0;
+  }
+  .slide.dark .lede { color: #c4cdc9; }
+
+  .footer {
+    position: absolute;
+    left: 72px; right: 72px; bottom: 28px;
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--ink-3);
+  }
+  .slide.dark .footer { color: #7c8b85; }
+  .brand-mark {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 600; font-size: 14px; color: var(--ink);
+  }
+  .slide.dark .brand-mark { color: #fff; }
+  .brand-mark .sq {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--brand); display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  .stat-row { display: flex; gap: 20px; margin-top: 36px; }
+  .stat-card {
+    flex: 1; border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    padding: 22px 24px;
+  }
+  .slide.dark .stat-card { background: #1f2e2a; border-color: #33453f; }
+  .stat-card .big { font-size: 30px; font-weight: 600; margin-bottom: 8px; }
+  .stat-card .cap { font-size: 13px; color: var(--ink-2); line-height: 1.4; }
+  .slide.dark .stat-card .cap { color: #c4cdc9; }
+  .stat-card .big.alert { color: var(--alert); }
+
+  .col3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 40px; }
+  .col3 .pillar { border-top: 2px solid var(--ink); padding: 18px 26px 0 0; }
+  .col3 .pillar + .pillar { border-left: 1px solid var(--line); padding-left: 26px; }
+  .pillar .tag { font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-3); text-transform: uppercase; margin-bottom: 10px; }
+  .pillar h3 { font-size: 19px; font-weight: 600; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .pillar p { font-size: 14px; line-height: 1.55; color: var(--ink-2); margin: 0; }
+
+  .bars { margin-top: 34px; display: grid; gap: 18px; }
+  .bars.two-col { grid-template-columns: 1fr 1fr; column-gap: 40px; }
+  .bar-item { border-left: 3px solid var(--brand); padding-left: 16px; }
+  .bar-item.b { border-left-color: var(--marigold); }
+  .bar-item.c { border-left-color: var(--ink); }
+  .bar-item.d { border-left-color: var(--forest); }
+  .bar-item.e { border-left-color: var(--violet); }
+  .bar-item h4 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .bar-item p { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+
+  .callout {
+    margin-top: 26px; border: 1px solid var(--violet); background: var(--violet-tint);
+    border-radius: 10px; padding: 18px 22px; font-size: 14.5px; line-height: 1.55; color: var(--violet-ink);
+  }
+
+  .shot-frame {
+    margin-top: 26px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    box-shadow: 0 12px 32px -18px rgba(22,33,31,0.35);
+    background: #fff;
+    display: flex; justify-content: center;
+    max-height: 400px;
+  }
+  .shot-frame img { display: block; width: auto; max-width: 100%; max-height: 400px; }
+
+  table.compare { width: 100%; border-collapse: collapse; margin-top: 34px; font-size: 14.5px; }
+  table.compare td { padding: 16px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  table.compare td.who { font-weight: 600; width: 240px; }
+  table.compare td.what { color: var(--ink-2); }
+
+  .grid2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 40px; margin-top: 30px; }
+
+  .cards3 { display: flex; gap: 18px; margin-top: 32px; }
+  .cards3 .card {
+    flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; background: #fff;
+  }
+  .slide.dark .cards3 .card { background: #2a3a35; border-color: #3d4f48; }
+  .cards3 .card h4 { font-size: 16px; font-weight: 600; margin: 0 0 8px; }
+  .cards3 .card p { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+  .slide.dark .cards3 .card p { color: #c4cdc9; }
+
+  .pagenum { font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- 1 — TITLE -->
+<section class="slide dark">
+  <div class="brand-mark" style="margin-bottom: 140px;">
+    <span class="sq">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/></svg>
+    </span>
+    LedgerFlow
+  </div>
+  <h1 style="font-size:52px; max-width: 17ch;">Bill the right party. Always know what's outstanding.</h1>
+  <p class="lede" style="max-width:56ch;">A lightweight invoicing and receivables ledger for logistics
+    businesses — for teams whose customer relationships don't map cleanly onto who actually gets billed.</p>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">1</span></div>
+</section>
+
+<!-- 2 — PROBLEM -->
+<section class="slide">
+  <p class="eyebrow">The problem</p>
+  <h2 style="max-width:26ch;">"Outstanding" is usually a guess, not a fact.</h2>
+  <p class="lede">A business billing a few dozen customers a month loses track of who's actually paid —
+    because payments land as bank-statement lines, not against invoices, and nobody reconciles the two
+    until someone asks.</p>
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="big alert">Spreadsheet</div>
+      <div class="cap">is where most "who owes what" answers actually live today — one column of formulas
+        away from being wrong.</div>
+    </div>
+    <div class="stat-card">
+      <div class="big">One payment,<br/>many invoices</div>
+      <div class="cap">is the case a single "mark as paid" checkbox can't represent — and the case that
+        breaks first.</div>
+    </div>
+    <div class="stat-card">
+      <div class="big">Who received it<br/>≠ who pays</div>
+      <div class="cap">brokers, head offices and third-party billing arrangements that most invoicing
+        tools quietly assume don't exist.</div>
+    </div>
+  </div>
+  <p class="lede" style="margin-top:26px; color: var(--ink-3); font-size:14px;">Today that runs on Excel,
+    a WhatsApp thread, and whoever remembers to chase the oldest invoice first.</p>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">2</span></div>
+</section>
+
+<!-- 3 — WHAT IT IS -->
+<section class="slide">
+  <p class="eyebrow">What LedgerFlow is</p>
+  <h2>Three things. Nothing else.</h2>
+  <p class="lede">Not an ERP, not full accounting. Just the order-to-cash loop, done properly — capture
+    what happened, bill the right party, collect and reconcile.</p>
+  <div class="col3">
+    <div class="pillar">
+      <p class="tag">01 · Service completion</p>
+      <h3>Recorded, not assumed</h3>
+      <p>Freight, loading, detention, warehousing — whatever was actually done, with a reference number
+        and a date, before it can ever be billed.</p>
+    </div>
+    <div class="pillar">
+      <p class="tag">02 · Invoice</p>
+      <h3>Billed to whoever's responsible</h3>
+      <p>Bill-to and deliver-to are independent fields, not one role. Frozen the moment it's issued — a
+        later edit goes through a credit note, never the original.</p>
+    </div>
+    <div class="pillar">
+      <p class="tag">03 · Receipt</p>
+      <h3>Applied, or honestly unapplied</h3>
+      <p>One payment can settle several invoices at once, or none yet. Nothing is force-matched just to
+        make a number disappear.</p>
+    </div>
+  </div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">3</span></div>
+</section>
+
+<!-- 4 — SCREENSHOT: DASHBOARD -->
+<section class="slide">
+  <p class="eyebrow">The office</p>
+  <h2>Every balance, one screen — and it's never stale.</h2>
+  <p class="lede">Outstanding, overdue, and by-party, computed from source transactions on every load.
+    Recording a receipt doesn't require refreshing a report, because there's no report to refresh.</p>
+  <div class="shot-frame"><img src="deck-shots/dashboard.png" /></div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">4</span></div>
+</section>
+
+<!-- 5 — SCREENSHOT: INVOICES LIST -->
+<section class="slide">
+  <p class="eyebrow">The register</p>
+  <h2>Ten invoices, five paid — it says five outstanding.</h2>
+  <p class="lede">This is the exact scenario the product was scoped against. Balance due is a live column
+    computed from receipts and credit notes, not a status a person sets by hand.</p>
+  <div class="shot-frame"><img src="deck-shots/invoices.png" /></div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">5</span></div>
+</section>
+
+<!-- 6 — SCREENSHOT: INVOICE FORM -->
+<section class="slide">
+  <p class="eyebrow">Billing</p>
+  <h2>Bill whoever's responsible — not whoever received the truck.</h2>
+  <p class="lede">Select completed, not-yet-invoiced services, choose the bill-to party independently of
+    the deliver-to party, and any override is written down with a reason.</p>
+  <div class="shot-frame"><img src="deck-shots/invoice-form.png" /></div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">6</span></div>
+</section>
+
+<!-- 7 — SCREENSHOT: SERVICE COMPLETIONS -->
+<section class="slide">
+  <p class="eyebrow">Proof of service</p>
+  <h2>Nothing gets billed until it's actually done.</h2>
+  <p class="lede">Freight, detention, loading, warehousing — logged with a reference number and a date by
+    whoever ran the job. Only a "completed" record is billable.</p>
+  <div class="shot-frame"><img src="deck-shots/service-completions.png" /></div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">7</span></div>
+</section>
+
+<!-- 8 — SCREENSHOT: RECEIPTS -->
+<section class="slide">
+  <p class="eyebrow">Getting paid</p>
+  <h2>Applied when it's known. Honest when it isn't.</h2>
+  <p class="lede">Every receipt shows what it settled and what's left unapplied — bank transfer, UPI, cash
+    or cheque, each recorded the way it actually arrived.</p>
+  <div class="shot-frame"><img src="deck-shots/receipts.png" /></div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">8</span></div>
+</section>
+
+<!-- 9 — HOW IT'S STORED -->
+<section class="slide">
+  <p class="eyebrow">How it's stored</p>
+  <h2 style="max-width:24ch;">Nothing important is a number someone typed in.</h2>
+  <div class="bars two-col">
+    <div class="bar-item a">
+      <h4>Balances are never stored</h4>
+      <p>"Outstanding" is a database view recomputed from invoices, receipts and credit notes on every
+        read — there's no cached number that can go stale.</p>
+    </div>
+    <div class="bar-item b">
+      <h4>Issued invoices are frozen</h4>
+      <p>The exact data behind an invoice is snapshotted the moment it's issued. A later change to a
+        customer's address can't rewrite what an already-sent document says.</p>
+    </div>
+    <div class="bar-item c">
+      <h4>Payments are receipts, not invoice edits</h4>
+      <p>One bank transfer can settle five invoices, or none yet. The allocation is its own record, not a
+        guess baked into the invoice.</p>
+    </div>
+    <div class="bar-item d">
+      <h4>Every company's data is walled off in the database</h4>
+      <p>Enforced by row-level security at the data layer — a bug in a screen can't leak one company's
+        invoices into another's.</p>
+    </div>
+  </div>
+  <div class="callout">Every bill-to override, every issued invoice, every correction is written to an
+    append-only log that nothing — not even an admin — can edit after the fact.</div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">9</span></div>
+</section>
+
+<!-- 10 — BUILT FOR HOW BILLING WORKS -->
+<section class="slide">
+  <p class="eyebrow">Built for how billing actually works</p>
+  <h2>Not a generic invoicing tool with GST bolted on.</h2>
+  <div class="grid2x2">
+    <div class="bar-item a">
+      <h4>GST computed correctly, not assumed</h4>
+      <p>CGST+SGST or IGST decided from the actual place of supply. Reverse charge and forward charge both
+        handled; exemption is checked before either.</p>
+    </div>
+    <div class="bar-item b">
+      <h4>Credit notes, not silent edits</h4>
+      <p>The only sanctioned way to correct an issued invoice. The original stays exactly as it was sent.</p>
+    </div>
+    <div class="bar-item d">
+      <h4>Gapless invoice numbers, per financial year</h4>
+      <p>Never reused, never skipped — even when something is cancelled.</p>
+    </div>
+    <div class="bar-item e">
+      <h4>Duplicate billing is structurally impossible</h4>
+      <p>A completed service can be attached to exactly one invoice line — enforced by the database, not
+        by someone remembering.</p>
+    </div>
+  </div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">10</span></div>
+</section>
+
+<!-- 11 — WHERE THIS SITS -->
+<section class="slide">
+  <p class="eyebrow">Where this sits</p>
+  <h2>The real competitor is a spreadsheet and a bank statement.</h2>
+  <p class="lede">Not another accounting suite. The thing standing in for one today.</p>
+  <table class="compare">
+    <tr><td class="who">Full ERP / accounting suite</td><td class="what">Tally, Zoho Books, QuickBooks — built for a generalist accountant, not an independent bill-to and deliver-to. Retrofitting that split means a workaround every month.</td></tr>
+    <tr><td class="who">Dispatch / TMS platforms</td><td class="what">Solve routing and fleet operations — invoicing is an afterthought bolted onto dispatch, not the product.</td></tr>
+    <tr><td class="who">Excel + WhatsApp + bank statement</td><td class="what">Free and familiar. This is what LedgerFlow has to beat, and the only thing it actually tries to replace.</td></tr>
+  </table>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">11</span></div>
+</section>
+
+<!-- 12 — METRICS (dark) -->
+<section class="slide dark">
+  <p class="eyebrow">What changes in the first month</p>
+  <h2 style="color:#fff;">The numbers we'll hold ourselves to.</h2>
+  <div class="stat-row">
+    <div class="stat-card"><div class="big">&lt; 2 min</div><div class="cap">to raise an invoice from a completed service</div></div>
+    <div class="stat-card"><div class="big">Instant</div><div class="cap">to answer "what does this customer owe right now"</div></div>
+    <div class="stat-card"><div class="big">Zero</div><div class="cap">services double-billed against the same completed job</div></div>
+    <div class="stat-card"><div class="big">100%</div><div class="cap">of issued invoices traceable to exactly what was sent</div></div>
+  </div>
+  <p class="lede" style="margin-top:30px;">Measured against what the office does today — a spreadsheet and
+    a bank statement — not against another piece of software.</p>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">12</span></div>
+</section>
+
+<!-- 13 — THE OFFER -->
+<section class="slide">
+  <p class="eyebrow">The offer</p>
+  <h2>Free while we build this out together.</h2>
+  <div class="bars" style="max-width:640px;">
+    <div class="bar-item a">
+      <h4>We set it up</h4>
+      <p>Your parties, your GST details and your invoice numbering, matched to what you already send.</p>
+    </div>
+    <div class="bar-item d">
+      <h4>One organisation, unlimited invoices</h4>
+      <p>No per-invoice fee during the pilot — pricing gets finalised together once the shape of real
+        usage is clear, not guessed at up front.</p>
+    </div>
+    <div class="bar-item b">
+      <h4>Your data stays exportable, always</h4>
+      <p>CSV export of parties, invoices and receipts from day one — nothing here becomes a trap.</p>
+    </div>
+  </div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">13</span></div>
+</section>
+
+<!-- 14 — CLOSING (dark) -->
+<section class="slide dark">
+  <p class="eyebrow">To start</p>
+  <h1 style="font-size:44px; color:#fff; max-width:22ch;">Three things, and we can raise your first real invoice this week.</h1>
+  <div class="cards3">
+    <div class="card"><h4>Your GST details</h4><p>and the tax treatment you use — reverse charge or forward charge, and the usual rate.</p></div>
+    <div class="card"><h4>Your customer list</h4><p>names, GSTINs where you have them, and who's billed versus who actually receives the goods.</p></div>
+    <div class="card"><h4>One recent invoice</h4><p>so the numbering and layout match what your customers already expect to see.</p></div>
+  </div>
+  <div class="brand-mark" style="margin-top:56px;">
+    <span class="sq">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/></svg>
+    </span>
+    LedgerFlow
+  </div>
+  <div class="footer"><span>LedgerFlow</span><span class="pagenum">14</span></div>
+</section>
+
+</body>
+</html>
