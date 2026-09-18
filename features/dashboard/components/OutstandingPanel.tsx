@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowUpDown, Search } from "lucide-react";
 import { formatINR } from "@/lib/money";
-import { cardClass } from "@/lib/ui/styles";
+import { StatCard } from "@/features/dashboard/components/StatCard";
 
 type Row = {
   party_id: string;
@@ -61,21 +61,14 @@ export function OutstandingPanel({ rows }: { rows: Row[] }) {
       </header>
 
       <div className="grid gap-4 min-[640px]:grid-cols-3">
-        <div className={cardClass}>
-          <p className="text-[12.5px] text-ink-2">Total outstanding</p>
-          <p className="mt-1.5 font-mono text-[24px] font-semibold text-ink">{formatINR(totalOutstandingPaise)}</p>
-        </div>
-        <div className={cardClass}>
-          <p className="text-[12.5px] text-ink-2">Overdue</p>
-          <p className="mt-1.5 font-mono text-[24px] font-semibold text-alert">{formatINR(totalOverduePaise)}</p>
-        </div>
-        <div className={cardClass}>
-          <p className="text-[12.5px] text-ink-2">Parties with a balance</p>
-          <p className="mt-1.5 font-mono text-[24px] font-semibold text-ink">{withBalance.length}</p>
-          {overdueCount > 0 && (
-            <p className="mt-1 text-[12px] text-alert">{overdueCount} {overdueCount === 1 ? "is" : "are"} overdue</p>
-          )}
-        </div>
+        <StatCard label="Total outstanding" value={formatINR(totalOutstandingPaise)} tone="ink" />
+        <StatCard label="Overdue" value={formatINR(totalOverduePaise)} tone="alert" />
+        <StatCard
+          label="Parties with a balance"
+          value={String(withBalance.length)}
+          tone="ink"
+          sub={overdueCount > 0 ? `${overdueCount} ${overdueCount === 1 ? "is" : "are"} overdue` : undefined}
+        />
       </div>
 
       <div className="relative max-w-sm">

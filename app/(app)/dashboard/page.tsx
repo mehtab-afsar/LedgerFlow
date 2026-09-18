@@ -6,7 +6,9 @@ import { verifyAuth } from "@/lib/auth/verify";
 import { formatINR, addPaise, subtractPaise } from "@/lib/money";
 import { resolvePeriod } from "@/lib/dashboard/period";
 import { PeriodPicker } from "@/features/dashboard/components/PeriodPicker";
+import { StatCard } from "@/features/dashboard/components/StatCard";
 import { buttonPrimaryClass, buttonSecondaryClass, cardClass } from "@/lib/ui/styles";
+import { pageEnter, pageExit } from "@/lib/ui/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -68,7 +70,7 @@ export default async function DashboardPage({
     receiptRows && receiptRows.length > 0 ? addPaise(...receiptRows.map((r) => r.amount_paise)) : 0;
 
   return (
-    <ViewTransition enter="slide-up" default="none">
+    <ViewTransition enter={pageEnter} exit={pageExit}>
       <div className="space-y-6 p-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -86,46 +88,51 @@ export default async function DashboardPage({
         </header>
 
         <section className={cardClass}>
-          <SectionLabel>As of today</SectionLabel>
-          <div className="mt-3 grid gap-4 min-[720px]:grid-cols-3">
-            <StatCard
-              label="Total outstanding"
-              value={formatINR(totalOutstandingPaise)}
-              tone="ink"
-              href="/dashboard/outstanding"
-              sub="See who owes what →"
-            />
-            <StatCard
-              label="Overdue"
-              value={formatINR(totalOverduePaise)}
-              tone="alert"
-              href="/dashboard/outstanding"
-              sub="See who owes what →"
-            />
-            <StatCard
-              label="Open invoices"
-              value={String(totalInvoicesOutstanding)}
-              sub={`across ${partiesWithBalance} ${partiesWithBalance === 1 ? "party" : "parties"}`}
-              tone="ink"
-            />
-          </div>
-        </section>
+          <div className="grid gap-6 min-[720px]:grid-cols-2">
+            <div>
+              <SectionLabel>As of today</SectionLabel>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <StatCard
+                  label="Outstanding"
+                  value={formatINR(totalOutstandingPaise)}
+                  tone="ink"
+                  href="/dashboard/outstanding"
+                  bordered={false}
+                  sub={`${totalInvoicesOutstanding} across ${partiesWithBalance} ${partiesWithBalance === 1 ? "party" : "parties"}`}
+                />
+                <StatCard
+                  label="Overdue"
+                  value={formatINR(totalOverduePaise)}
+                  tone="alert"
+                  href="/dashboard/outstanding"
+                  bordered={false}
+                  sub="See who owes what →"
+                />
+              </div>
+            </div>
 
-        <section className={cardClass}>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <SectionLabel>{period.label}</SectionLabel>
-            <PeriodPicker activePreset={period.preset} from={period.from} to={period.to} />
-          </div>
-          <div className="mt-3 grid gap-4 min-[720px]:grid-cols-4">
-            <StatCard label="Revenue" value={formatINR(revenuePaise)} tone="ink" sub="excl. GST" />
-            <StatCard label="Cost" value={formatINR(costPaise)} tone="ink" sub="jobs + expenses" />
-            <StatCard
-              label="Profit"
-              value={formatINR(profitPaise)}
-              tone={profitPaise < 0 ? "alert" : "forest"}
-              sub="revenue − cost"
-            />
-            <StatCard label="Collected" value={formatINR(collectedPaise)} tone="forest" sub="cash received" />
+            <div className="border-t border-line-soft pt-6 min-[720px]:border-l min-[720px]:border-t-0 min-[720px]:pl-6 min-[720px]:pt-0">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <SectionLabel>{period.label}</SectionLabel>
+                <PeriodPicker activePreset={period.preset} from={period.from} to={period.to} />
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <StatCard
+                  label="Profit"
+                  value={formatINR(profitPaise)}
+                  tone={profitPaise < 0 ? "alert" : "forest"}
+                  bordered={false}
+                  sub={`Revenue ${formatINR(revenuePaise)} − cost ${formatINR(costPaise)}`}
+                />
+                <StatCard
+                  label="Collected"
+                  value={formatINR(collectedPaise)}
+                  tone="forest"
+                  bordered={false}
+                  sub="cash received"
+                />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -147,35 +154,4 @@ export default async function DashboardPage({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return <h2 className="text-[12px] font-medium uppercase tracking-wide text-ink-3">{children}</h2>;
-}
-
-function StatCard({
-  label,
-  value,
-  sub,
-  tone,
-  href,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  tone: "ink" | "alert" | "forest";
-  href?: string;
-}) {
-  const toneClass = tone === "alert" ? "text-alert" : tone === "forest" ? "text-forest-ink" : "text-ink";
-  const content = (
-    <>
-      <p className="text-[12.5px] text-ink-2">{label}</p>
-      <p className={`mt-1.5 font-mono text-[24px] font-semibold ${toneClass}`}>{value}</p>
-      {sub && <p className="mt-1 text-[12px] text-ink-3">{sub}</p>}
-    </>
-  );
-  if (href) {
-    return (
-      <Link href={href} className={`${cardClass} block transition-colors duration-150 hover:border-brand hover:bg-brand-tint`}>
-        {content}
-      </Link>
-    );
-  }
-  return <div className={cardClass}>{content}</div>;
 }

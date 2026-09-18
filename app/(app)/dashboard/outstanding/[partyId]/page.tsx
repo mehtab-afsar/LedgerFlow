@@ -32,24 +32,11 @@ export default async function PartyLedgerPage({ params }: { params: Promise<{ pa
 
   const invoicesWithBalances = await attachInvoiceBalances(supabase, invoices ?? []);
 
-  // Fetched up front so each row can expand its payment history in place —
-  // no per-row fetch, no navigating away to the full invoice document.
-  const invoiceIds = (invoices ?? []).map((inv) => inv.id);
-  const { data: allocations } =
-    invoiceIds.length > 0
-      ? await supabase
-          .from("receipt_allocations")
-          .select("id, invoice_id, amount_allocated_paise, receipts(received_on, method, reference_no)")
-          .in("invoice_id", invoiceIds)
-          .order("id")
-      : { data: [] };
-
   return (
     <ViewTransition enter={pageEnter} exit={pageExit}>
       <PartyLedgerPanel
         party={party}
         invoices={invoicesWithBalances as unknown as Parameters<typeof PartyLedgerPanel>[0]["invoices"]}
-        allocations={(allocations ?? []) as unknown as Parameters<typeof PartyLedgerPanel>[0]["allocations"]}
       />
     </ViewTransition>
   );

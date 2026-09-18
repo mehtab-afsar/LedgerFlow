@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { verifyAuth } from "@/lib/auth/verify";
 import { ActivityFeed } from "@/features/dashboard/components/ActivityFeed";
+import { pageEnter, pageExit } from "@/lib/ui/page-transition";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Activity" };
@@ -19,7 +20,7 @@ export default async function ActivityPage() {
     .limit(100);
 
   return (
-    <ViewTransition enter="slide-up" default="none">
+    <ViewTransition enter={pageEnter} exit={pageExit}>
       <div className="space-y-6 p-8">
         <header>
           <h1 className="text-[22px] font-semibold tracking-[-0.01em] text-ink">Activity</h1>
